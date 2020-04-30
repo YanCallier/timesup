@@ -1,0 +1,25 @@
+{
+  "name": "timesup",
+  "version": "1.0.0",
+  "description": "Times Up Game",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YanCallier/timesup.git"
+  },
+  "dependencies": {
+    "@material-ui/core": "4.2.1",
+    "express": "4.17.1",
+    "socket.io": "^2.2.0"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/YanCallier/timesup/issues"
+  },
+  "homepage": "https://github.com/YanCallier/timesup#readme"
+}
