@@ -12,6 +12,7 @@
     "url": "git+https://github.com/YanCallier/timesup.git"
   },
   "dependencies": {
+    "mongodb": "^3.1.13",
     "@material-ui/core": "4.2.1",
     "express": "4.17.1",
     "socket.io": "^2.2.0"
