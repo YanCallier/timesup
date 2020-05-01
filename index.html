@@ -6,15 +6,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Chapeau</title>
+    <script src="/socket.io/socket.io.js"></script>
 </head>
 
 <body>
     <h1>Le jeu du chapeau</h1>
-    <strong>Mettre un mot dans le chapeau :</strong>
-    <form method='GET' action='/in'>
+    <!-- <strong>Mettre un mot dans le chapeau :</strong> -->
+    <!-- <form method='GET' action='/in'>
         <input type="text" placeholder='Ecrire un mot' name='word'></input><br /><br />
-        <input type="submit" value='Envoyer !'></input>
-    </form>
+        <input type="submit" value='Envoyer !'></input> -->
+    <!-- </form>
+        <input type="submit" value='Piocher un mot'></input>
+    </form> -->
+    <input type="text" placeholder='Ecrire un mot' id='word'></input><br /><br />
+    <button onclick="addWord()">Mettre dans le chapeau</button>
+    <button onclick="draw()">Piocher un mot</button>
 </body>
+<script>
+    socket = io.connect();
+    // socket = io.connect('http://localhost:8080');
+
+    function addWord() {
+        var word = document.getElementById('word').value;
+        document.getElementById('word').value = "";
+        socket.emit('addWord', word);
+    }
+
+    function draw() {
+        socket.emit('draw');
+    }
+
+    socket.on('draw', (pickedWord) => {
+        console.log(pickedWord)
+    });
+</script>
 
 </html>

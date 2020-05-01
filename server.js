@@ -12,7 +12,6 @@ app.use("/", express.static(__dirname));
 
 app.get('/in', function (req, res) {
 
-
     MongoClient.connect(uri, { useNewUrlParser: true }, function (err, client) {
         if (err) console.log('conexion error : ' + err);
         let collection = client.db('timesup').collection('games');
@@ -24,6 +23,48 @@ app.get('/in', function (req, res) {
         )
         client.close();
         res.redirect('/')
+    });
+});
+
+app.get('/out', function (req, res) {
+
+    MongoClient.connect(uri, { useNewUrlParser: true }, function (err, client) {
+        if (err) console.log('conexion error : ' + err);
+        // let collection = client.db('timesup').collection('games');
+        // console.log(req.query.word);
+
+        // collection.findOne(
+        //     { "name": "game0" },
+        //     { $push: { words: req.query.word } }
+        // )
+        client.close();
+        res.send([1, 2, 3]);
+        // res.redirect('/');
+        // res.redirect('/', { name: "test" })
+    });
+});
+
+var words = [];
+
+io.on('connection', function (socket) {
+    console.log(socket.id);
+
+    socket.on('addWord', (word) => {
+        words.push(word);
+    })
+
+    socket.on('draw', () => {
+
+        var randomWordId = Math.floor(Math.random() * Math.floor(words.length));
+        pickedWord = words.splice(randomWordId, 1)[0];
+        socket.emit('draw', pickedWord);
+
+    });
+
+
+
+    socket.on('disconnect', (reason) => {
+        console.log(('Événement socket.io [disconnect]socket.id : ' + socket.id + 'reason : ' + reason));
     });
 });
 
