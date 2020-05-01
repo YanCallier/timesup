@@ -10,42 +10,42 @@ const uri = "mongodb+srv://yanAdmin:DATE2naissance@cluster0-hcaod.gcp.mongodb.ne
 
 app.use("/", express.static(__dirname));
 
-app.get('/in', function (req, res) {
+// app.get('/in', function (req, res) {
 
-    MongoClient.connect(uri, { useNewUrlParser: true }, function (err, client) {
-        if (err) console.log('conexion error : ' + err);
-        let collection = client.db('timesup').collection('games');
-        console.log(req.query.word);
+//     MongoClient.connect(uri, { useNewUrlParser: true }, function (err, client) {
+//         if (err) console.log('conexion error : ' + err);
+//         let collection = client.db('timesup').collection('games');
+//         console.log(req.query.word);
 
-        collection.updateOne(
-            { "name": "game0" },
-            { $push: { words: req.query.word } }
-        )
-        client.close();
-        res.redirect('/')
-    });
-});
+//         collection.updateOne(
+//             { "name": "game0" },
+//             { $push: { words: req.query.word } }
+//         )
+//         client.close();
+//         res.redirect('/')
+//     });
+// });
 
-app.get('/out', function (req, res) {
+// app.get('/out', function (req, res) {
 
-    MongoClient.connect(uri, { useNewUrlParser: true }, function (err, client) {
-        if (err) console.log('conexion error : ' + err);
-        // let collection = client.db('timesup').collection('games');
-        // console.log(req.query.word);
+//     MongoClient.connect(uri, { useNewUrlParser: true }, function (err, client) {
+//         if (err) console.log('conexion error : ' + err);
+//         // let collection = client.db('timesup').collection('games');
+//         // console.log(req.query.word);
 
-        // collection.findOne(
-        //     { "name": "game0" },
-        //     { $push: { words: req.query.word } }
-        // )
-        client.close();
-        res.send([1, 2, 3]);
-        // res.redirect('/');
-        // res.redirect('/', { name: "test" })
-    });
-});
+//         // collection.findOne(
+//         //     { "name": "game0" },
+//         //     { $push: { words: req.query.word } }
+//         // )
+//         client.close();
+//         res.send([1, 2, 3]);
+//         // res.redirect('/');
+//         // res.redirect('/', { name: "test" })
+//     });
+// });
 
 var words = [];
-
+var pickedWords = [];
 io.on('connection', function (socket) {
     console.log(socket.id);
 
@@ -56,12 +56,21 @@ io.on('connection', function (socket) {
     socket.on('draw', () => {
 
         var randomWordId = Math.floor(Math.random() * Math.floor(words.length));
-        pickedWord = words.splice(randomWordId, 1)[0];
+        let pickedWord = words.splice(randomWordId, 1)[0];
+        if (pickedWord) {
+            pickedWords.push(pickedWord);
+        }
+        else {
+            pickedWord = "Le chapeau est vide !"
+        }
         socket.emit('draw', pickedWord);
 
     });
 
-
+    socket.on('reFill', () => {
+        words = pickedWords;
+        pickedWords = [];
+    })
 
     socket.on('disconnect', (reason) => {
         console.log(('Événement socket.io [disconnect]socket.id : ' + socket.id + 'reason : ' + reason));

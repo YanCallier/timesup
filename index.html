@@ -19,9 +19,12 @@
         <input type="submit" value='Piocher un mot'></input>
     </form> -->
     <input type="text" placeholder='Ecrire un mot' id='word'></input>
-    <button onclick="addWord()">Mettre dans le chapeau</button><br /><br />
+    <button onclick="addWord()">Mettre dans le chapeau</button>
+    <br /><br />
     <button onclick="draw()">Piocher un mot</button>
     <strong id="pioche"></strong>
+    <br /><br />
+    <button onclick="reFill()">Remettre les mots dans le chapeau</button>
 </body>
 <script>
     socket = io.connect();
@@ -38,12 +41,12 @@
     }
 
     socket.on('draw', (pickedWord) => {
-        if (pickedWord) {
-            document.getElementById('pioche').innerHTML = pickedWord;
-        } else {
-            document.getElementById('pioche').innerHTML = "Le chapeau est vide !";
-        }
+        document.getElementById('pioche').innerHTML = pickedWord;
     });
+
+    function reFill() {
+        socket.emit('reFill');
+    }
 </script>
 
 </html>
