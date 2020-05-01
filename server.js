@@ -72,6 +72,11 @@ io.on('connection', function (socket) {
         pickedWords = [];
     })
 
+    socket.on('endGame', () => {
+        words = [];
+        pickedWords = [];
+    })
+
     socket.on('disconnect', (reason) => {
         console.log(('Événement socket.io [disconnect]socket.id : ' + socket.id + 'reason : ' + reason));
     });

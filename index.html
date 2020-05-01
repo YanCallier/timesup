@@ -25,6 +25,8 @@
     <strong id="pioche"></strong>
     <br /><br />
     <button onclick="reFill()">Remettre les mots dans le chapeau</button>
+    <br /><br />
+    <button onclick="endGame()">Fin de partie</button>
 </body>
 <script>
     socket = io.connect();
@@ -46,6 +48,10 @@
 
     function reFill() {
         socket.emit('reFill');
+    }
+
+    function endGame() {
+        socket.emit('endGame');
     }
 </script>
 
