@@ -49,6 +49,7 @@
     // socket = io.connect('http://localhost:8080');
 
     function beginTurn() {
+        time = 3 * 60 * 1000;
         socket.emit('beginTurn');
         document.getElementById('guessBtt').style.display = "flex";
         draw();
@@ -67,6 +68,7 @@
     }
 
     function draw() {
+        console.log("drawing");
         socket.emit('draw');
     }
 
