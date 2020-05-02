@@ -53,18 +53,26 @@ io.on('connection', function (socket) {
         words.push(word);
     })
 
-    socket.on('draw', () => {
+    socket.on('beginTurn', () => {
+        io.emit('beginTurn');
+    });
 
+    socket.on('endWord', (guess) => {
+        io.emit('endWord', guess);
+    });
+
+    socket.on('draw', () => {
         var randomWordId = Math.floor(Math.random() * Math.floor(words.length));
         let pickedWord = words.splice(randomWordId, 1)[0];
         if (pickedWord) {
             pickedWords.push(pickedWord);
         }
-        else {
-            pickedWord = "Le chapeau est vide !"
-        }
         socket.emit('draw', pickedWord);
 
+    });
+
+    socket.on('endTurn', (endReason) => {
+        io.emit('endTurn', endReason);
     });
 
     socket.on('reFill', () => {
