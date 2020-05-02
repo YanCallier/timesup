@@ -57,8 +57,8 @@ io.on('connection', function (socket) {
         io.emit('beginTurn');
     });
 
-    socket.on('endWord', (guess) => {
-        io.emit('endWord', guess);
+    socket.on('endWord', (data) => {
+        io.emit('endWord', data.guess, data.word);
     });
 
     socket.on('draw', () => {

@@ -82,19 +82,22 @@
     });
 
     function endWord(guess) {
-        socket.emit('endWord', guess);
+        socket.emit('endWord', {
+            guess: guess,
+            word: currentWord
+        });
+        draw();
     }
 
-    socket.on('endWord', (guess) => {
+    socket.on('endWord', (guess, word) => {
         var wordColor = "red";
         if (guess) {
             points += 1;
             wordColor = "green"
         }
         var guessWords = document.getElementById('little-words');
-        guessWords.innerHTML = guessWords.innerHTML + "<div style='color:" + wordColor + "'>" + currentWord +
+        guessWords.innerHTML = guessWords.innerHTML + "<div style='color:" + wordColor + "'>" + word +
             "</div>";
-        draw();
     });
 
     function timeTick() {
