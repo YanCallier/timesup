@@ -29,16 +29,15 @@
     padding: 5px; 
     top:5px; 
     left:5px;
-    width:500px;
     height:500px;
     ">
-        <div id='big-words' style="font-size: 50px; text-align: center"></div>
+        <div id='big-words' style="font-size: 4vw; text-align: center"></div>
         <div id='guessBtt' style="display:none;  justify-content: center;">
             <button onclick="endWord('ok')" id="doneBtt">Réussi !</button>
             <button onclick="endWord(null)" id="passBtt">Passe !</button>
         </div>
-        <div id='little-words' style="font-size: 15px; text-align: center"></div>
-        <div id='big-big-words' style="font-size: 80px; text-align: center"></div>
+        <div id='little-words' style="font-size: 2vw; text-align: center"></div>
+        <div id='big-big-words' style="font-size: 6vw; text-align: center"></div>
     </div>
 </body>
 <script>
@@ -52,13 +51,13 @@
     function beginTurn() {
         socket.emit('beginTurn');
         document.getElementById('guessBtt').style.display = "flex";
+        draw();
     }
 
     socket.on('beginTurn', () => {
         turnSatus = 'on';
         timeTick();
         document.getElementById('turnView').style.display = "";
-        draw();
     });
 
     function addWord() {
@@ -99,7 +98,7 @@
     function timeTick() {
         if (turnSatus) {
             time -= 1000;
-            document.getElementById('big-big-words').innerHTML = time / 1000 + " secondes";
+            document.getElementById('big-big-words').innerHTML = time / 1000 + " s";
             if (time < 0) {
                 endTurn("Temps écoulé !");
             } else {
