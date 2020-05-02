@@ -124,6 +124,8 @@
         points = 0;
         time = 3 * 60 * 1000;
         setTimeout(hideTurnView = function () {
+            document.getElementById('big-words').innerHTML = "";
+            document.getElementById('big-big-words').innerHTML = "";
             document.getElementById('little-words').innerHTML = "";
             document.getElementById('turnView').style.display = "none";
         }, 5000);
