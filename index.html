@@ -53,7 +53,8 @@
   </body>
   <script>
     var points = 0;
-    var nbs = 40;
+    var nbsDefault = 40;
+    var nbs;
     var currentWord;
     var turnSatus = null;
     socket = io.connect();
@@ -64,7 +65,7 @@
     });
 
     function beginTurn() {
-      nbs = 40;
+      nbs = nbsDefault;
       socket.emit('beginTurn');
       document.getElementById('guessBtt').style.display = 'flex';
       draw();
@@ -116,15 +117,15 @@
         nbs -= 1;
         document.getElementById('big-big-words').innerHTML = nbs + ' s';
         if (nbs < 0) {
-          endTurn('Temps écoulé !');
+          endTurn('Temps écoulé !', currentWord);
         } else {
           setTimeout(timeTick, 1000);
         }
       }
     }
 
-    function endTurn(endReason) {
-      socket.emit('endTurn', endReason);
+    function endTurn(endReason, lastWord) {
+      socket.emit('endTurn', endReason, lastWord);
     }
 
     socket.on('endTurn', (endReason) => {
@@ -133,7 +134,7 @@
       document.getElementById('big-words').innerHTML = endReason;
       document.getElementById('big-big-words').innerHTML = points + ' points';
       points = 0;
-      nbs = 40;
+      nbs = nbsDefault;
       socket.emit('majNbWords');
       setTimeout(
         (hideTurnView = function () {

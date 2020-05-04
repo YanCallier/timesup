@@ -63,6 +63,13 @@ io.on('connection', function (socket) {
         io.emit('beginTurn');
     });
 
+    socket.on('draw', () => {
+        var randomWordId = Math.floor(Math.random() * Math.floor(words.length));
+        let pickedWord = words.splice(randomWordId, 1)[0];
+        socket.emit('draw', pickedWord);
+
+    });
+
     socket.on('endWord', (data) => {
         if (data.guess) {
             pickedWords.push(data.word);
@@ -74,14 +81,10 @@ io.on('connection', function (socket) {
         console.log(words);
     });
 
-    socket.on('draw', () => {
-        var randomWordId = Math.floor(Math.random() * Math.floor(words.length));
-        let pickedWord = words.splice(randomWordId, 1)[0];
-        socket.emit('draw', pickedWord);
-
-    });
-
-    socket.on('endTurn', (endReason) => {
+    socket.on('endTurn', (endReason, lastword) => {
+        if (lastword) {
+            passedWords.push(lastword);
+        }
         for (word of passedWords) {
             words.push(word);
         }
