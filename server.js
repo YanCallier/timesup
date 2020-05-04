@@ -46,8 +46,14 @@ app.use("/", express.static(__dirname));
 
 var words = [];
 var pickedWords = [];
+var passedWords = [];
 io.on('connection', function (socket) {
     console.log(socket.id);
+    socket.emit('nbWords', words.length);
+
+    socket.on('majNbWords', () => {
+        io.emit('nbWords', words.length);
+    })
 
     socket.on('addWord', (word) => {
         words.push(word);
@@ -58,31 +64,45 @@ io.on('connection', function (socket) {
     });
 
     socket.on('endWord', (data) => {
-        io.emit('endWord', data.guess, data.word);
+        if (data.guess) {
+            pickedWords.push(data.word);
+            io.emit('guessWord', data.word);
+        }
+        else {
+            passedWords.push(data.word);
+        }
+        console.log(words);
     });
 
     socket.on('draw', () => {
         var randomWordId = Math.floor(Math.random() * Math.floor(words.length));
         let pickedWord = words.splice(randomWordId, 1)[0];
-        if (pickedWord) {
-            pickedWords.push(pickedWord);
-        }
         socket.emit('draw', pickedWord);
 
     });
 
     socket.on('endTurn', (endReason) => {
+        for (word of passedWords) {
+            words.push(word);
+        }
+        passedWords = [];
         io.emit('endTurn', endReason);
     });
 
     socket.on('reFill', () => {
-        words = pickedWords;
-        pickedWords = [];
+        if (words.length > 0) {
+            socket.emit('reFillRefused', 'Il y a des mots à piocher avant de remplir le chapeau')
+        }
+        else {
+            words = pickedWords;
+            pickedWords = [];
+        }
     })
 
     socket.on('endGame', () => {
         words = [];
         pickedWords = [];
+        io.emit('nbWords', words.length);
     })
 
     socket.on('disconnect', (reason) => {

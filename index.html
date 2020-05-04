@@ -1,143 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Chapeau</title>
     <script src="/socket.io/socket.io.js"></script>
-</head>
+  </head>
 
-<body>
+  <body>
     <h1>Le jeu du chapeau</h1>
-    <input type="text" placeholder='Ecrire un mot' id='word'></input>
+    <!-- <div> Le jeu paramétré en <span id="span-nbs">654</span>/tour<br/>
+        Modififier : 
+        <input type="text" placeholder='Nombre de seconde/tour' id='word'></input>
+        <button onclick="addWord()">Mettre dans le chapeau</button>
+    </div> -->
+    <input type="text" placeholder="Ecrire un mot" id="word" />
     <button onclick="addWord()">Mettre dans le chapeau</button>
     <br /><br />
+    Le chapeau contient <span id="spanNbWords"></span> mots.<br /><br />
     <button onclick="beginTurn()">Jouer un tour</button>
     <strong id="pioche"></strong>
     <spam id="timer"></spam>
     <br /><br />
+    <!-- <div id="reFillBtt" style="display: none;"> -->
+    <!-- Le chapeau est vide. -->
     <button onclick="reFill()">Remettre les mots dans le chapeau</button>
+    <!-- </div> -->
     <br /><br />
     <button onclick="endGame()">Fin de partie</button>
-    <div id="turnView" style="
-    display:none; 
-    position:absolute; 
-    background-color: white; 
-    border: 1px solid grey; 
-    padding: 5px; 
-    top:5px; 
-    left:5px;
-    height:500px;
-    ">
-        <div id='big-words' style="font-size: 4vw; text-align: center"></div>
-        <div id='guessBtt' style="display:none;  justify-content: center;">
-            <button onclick="endWord('ok')" id="doneBtt">Réussi !</button>
-            <button onclick="endWord(null)" id="passBtt">Passe !</button>
-        </div>
-        <div id='little-words' style="font-size: 2vw; text-align: center"></div>
-        <div id='big-big-words' style="font-size: 6vw; text-align: center"></div>
+    <div
+      id="turnView"
+      style="
+        display: none;
+        position: absolute;
+        background-color: white;
+        border: 1px solid grey;
+        padding: 5px;
+        top: 5px;
+        left: 5px;
+        height: 500px;
+      "
+    >
+      <div id="big-words" style="font-size: 4vw; text-align: center;"></div>
+      <div id="guessBtt" style="display: none; justify-content: center;">
+        <button onclick="endWord('ok')" id="doneBtt">Réussi !</button>
+        <button onclick="endWord(null)" id="passBtt">Passe !</button>
+      </div>
+      <div id="little-words" style="font-size: 2vw; text-align: center;"></div>
+      <div id="big-big-words" style="font-size: 6vw; text-align: center;"></div>
     </div>
-</body>
-<script>
+  </body>
+  <script>
     var points = 0;
-    var time = 0.70 * 60 * 1000;
+    var nbs = 40;
     var currentWord;
     var turnSatus = null;
     socket = io.connect();
     // socket = io.connect('http://localhost:8080');
 
+    socket.on('nbWords', (nbWords) => {
+      document.getElementById('spanNbWords').innerHTML = nbWords;
+    });
+
     function beginTurn() {
-        time = 0.70 * 60 * 1000;
-        socket.emit('beginTurn');
-        document.getElementById('guessBtt').style.display = "flex";
-        draw();
+      nbs = 40;
+      socket.emit('beginTurn');
+      document.getElementById('guessBtt').style.display = 'flex';
+      draw();
     }
 
     socket.on('beginTurn', () => {
-        turnSatus = 'on';
-        timeTick();
-        document.getElementById('turnView').style.display = "";
+      turnSatus = 'on';
+      timeTick();
+      document.getElementById('turnView').style.display = '';
     });
 
     function addWord() {
-        var word = document.getElementById('word').value;
-        document.getElementById('word').value = "";
-        socket.emit('addWord', word);
+      var word = document.getElementById('word').value;
+      document.getElementById('word').value = '';
+      socket.emit('addWord', word);
+      socket.emit('majNbWords');
     }
 
     function draw() {
-        console.log("drawing");
-        socket.emit('draw');
+      console.log('drawing');
+      socket.emit('draw');
     }
 
     socket.on('draw', (pickedWord) => {
-        currentWord = pickedWord;
-        if (pickedWord) {
-            document.getElementById('big-words').innerHTML = pickedWord;
-        } else {
-            endTurn('Le chapeau est vide !')
-        }
+      currentWord = pickedWord;
+      if (pickedWord) {
+        document.getElementById('big-words').innerHTML = pickedWord;
+      } else {
+        endTurn('Le chapeau est vide !');
+      }
     });
 
     function endWord(guess) {
-        socket.emit('endWord', {
-            guess: guess,
-            word: currentWord
-        });
-        draw();
+      socket.emit('endWord', {
+        guess: guess,
+        word: currentWord,
+      });
+      draw();
     }
 
-    socket.on('endWord', (guess, word) => {
-        var wordColor = "red";
-        if (guess) {
-            points += 1;
-            wordColor = "green"
-        }
-        var guessWords = document.getElementById('little-words');
-        guessWords.innerHTML = guessWords.innerHTML + "<div style='color:" + wordColor + "'>" + word +
-            "</div>";
+    socket.on('guessWord', (word) => {
+      points += 1;
+      var guessWords = document.getElementById('little-words');
+      guessWords.innerHTML += "<div style='color:green'>" + word + '</div>';
     });
 
     function timeTick() {
-        if (turnSatus) {
-            time -= 1000;
-            document.getElementById('big-big-words').innerHTML = time / 1000 + " s";
-            if (time < 0) {
-                endTurn("Temps écoulé !");
-            } else {
-                setTimeout(timeTick, 1000);
-            }
+      if (turnSatus) {
+        nbs -= 1;
+        document.getElementById('big-big-words').innerHTML = nbs + ' s';
+        if (nbs < 0) {
+          endTurn('Temps écoulé !');
+        } else {
+          setTimeout(timeTick, 1000);
         }
+      }
     }
 
     function endTurn(endReason) {
-        socket.emit('endTurn', endReason);
+      socket.emit('endTurn', endReason);
     }
 
     socket.on('endTurn', (endReason) => {
-        turnSatus = null;
-        document.getElementById('guessBtt').style.display = "none";
-        document.getElementById('big-words').innerHTML = endReason;
-        document.getElementById('big-big-words').innerHTML = points + " points";
-        points = 0;
-        time = 0.70 * 60 * 1000;
-        setTimeout(hideTurnView = function () {
-            document.getElementById('big-words').innerHTML = "";
-            document.getElementById('big-big-words').innerHTML = "";
-            document.getElementById('little-words').innerHTML = "";
-            document.getElementById('turnView').style.display = "none";
-        }, 5000);
+      turnSatus = null;
+      document.getElementById('guessBtt').style.display = 'none';
+      document.getElementById('big-words').innerHTML = endReason;
+      document.getElementById('big-big-words').innerHTML = points + ' points';
+      points = 0;
+      nbs = 40;
+      socket.emit('majNbWords');
+      setTimeout(
+        (hideTurnView = function () {
+          document.getElementById('big-words').innerHTML = '';
+          document.getElementById('big-big-words').innerHTML = '';
+          document.getElementById('little-words').innerHTML = '';
+          document.getElementById('turnView').style.display = 'none';
+        }),
+        5000
+      );
     });
 
+    // function displayReFillBtt(pickedWords){
+    //     if (nbWords === 0 && pickedWords > 0){
+    //         document.getElementById('reFillBtt').style.display = '';
+    //     }
+    //     else {
+    //         document.getElementById('reFillBtt').style.display = "none";
+    //     }
+    // }
+
     function reFill() {
-        socket.emit('reFill');
+      socket.emit('reFill');
+      socket.emit('majNbWords');
     }
+
+    socket.on('reFillRefused', (refuseReason) => {
+      alert(refuseReason);
+    });
 
     function endGame() {
-        socket.emit('endGame');
+      socket.emit('endGame');
     }
-</script>
-
+  </script>
 </html>
