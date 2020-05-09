@@ -1,3 +1,4 @@
+// HD93D-9YJC9-3MRVK-F96GR-29HMZ
 const express = require('express');
 const app = express();
 const server = require('http').Server(app);
@@ -8,24 +9,45 @@ const MongoClient = require('mongodb').MongoClient;
 // const uri = "mongodb+srv://yanAdmin:DATE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
 const uri = "mongodb+srv://yanAdmin:DATE2naissance@cluster0-hcaod.gcp.mongodb.net/test?retryWrites=true&w=majority";
 
-app.use("/", express.static(__dirname));
 
-// app.get('/in', function (req, res) {
-
-//     MongoClient.connect(uri, { useNewUrlParser: true }, function (err, client) {
-//         if (err) console.log('conexion error : ' + err);
-//         let collection = client.db('timesup').collection('games');
-//         console.log(req.query.word);
-
-//         collection.updateOne(
-//             { "name": "game0" },
-//             { $push: { words: req.query.word } }
-//         )
-//         client.close();
-//         res.redirect('/')
-//     });
+// app.get('in/:gameID', function (req, res) {
+//     // res.send("tagId is set to " + req.params.tagId);
+//     // console.log(req.query.gameID);
+//     console.log("test");
+//     res.redirect('/')
 // });
 
+
+
+
+// app.get('/', function (req, res) {
+
+//     // MongoClient.connect(uri, { useNewUrlParser: true }, function (err, client) {
+//     //     if (err) console.log('conexion error : ' + err);
+//     //     let collection = client.db('timesup').collection('games');
+//     //     console.log(req.query.word);
+
+//     //     collection.updateOne(
+//     //         { "name": "game0" },
+//     //         { $push: { words: req.query.word } }
+//     //     )
+//     //     client.close();
+//     //     res.redirect('/')
+//     // });
+//     console.log(req.query.gameID)
+//     next();
+//     // res.redirect('/')
+// });
+
+// app.use("/", express.static(__dirname));
+
+// app.use('/', function (req, res, next) {
+//     console.log('Request Type:', req.query.gameID);
+//     games[req.query.gameID].players.push();
+//     next();
+// });
+
+app.use("/", express.static(__dirname));
 // app.get('/out', function (req, res) {
 
 //     MongoClient.connect(uri, { useNewUrlParser: true }, function (err, client) {
@@ -47,65 +69,87 @@ app.use("/", express.static(__dirname));
 var words = [];
 var pickedWords = [];
 var passedWords = [];
+const games = {};
+
 io.on('connection', function (socket) {
-    console.log(socket.id);
-    socket.emit('nbWords', words.length);
+
+    socket.on('creaGame', () => {
+        games[socket.id] = {
+            words: [],
+            pickedWords: [],
+            passedWords: [],
+            players: [],
+        };
+    });
+
+    socket.on('newPlayer', (gameID) => {
+        if (games[gameID]) {
+            games[gameID].players.push(socket.id);
+            // console.log(socket.id + " rentre dans la game " + gameID + " : " + games[gameID].players);
+            socket.emit('welcomeInGame');
+            socket.emit('nbWords', games[gameID].words.length);
+            socket.join(gameID);
+            socket.gameID = gameID;
+        }
+        else {
+            socket.emit('unavailableGame');
+        }
+    });
 
     socket.on('majNbWords', () => {
-        io.emit('nbWords', words.length);
-    })
+        // io.emit('nbWords', games[gameID].words.length);
+        io.in(socket.gameID).emit('nbWords', games[socket.gameID].words.length);
+    });
 
     socket.on('addWord', (word) => {
-        words.push(word);
-    })
+        games[socket.gameID].words.push(word);
+    });
 
     socket.on('beginTurn', () => {
-        io.emit('beginTurn');
+        io.in(socket.gameID).emit('beginTurn');
     });
 
     socket.on('draw', () => {
-        var randomWordId = Math.floor(Math.random() * Math.floor(words.length));
-        let pickedWord = words.splice(randomWordId, 1)[0];
+        var randomWordId = Math.floor(Math.random() * Math.floor(games[socket.gameID].words.length));
+        let pickedWord = games[socket.gameID].words.splice(randomWordId, 1)[0];
         socket.emit('draw', pickedWord);
-
     });
 
     socket.on('endWord', (data) => {
         if (data.guess) {
-            pickedWords.push(data.word);
-            io.emit('guessWord', data.word);
+            games[socket.gameID].pickedWords.push(data.word);
+            io.in(socket.gameID).emit('guessWord', data.word);
         }
         else {
-            passedWords.push(data.word);
+            games[socket.gameID].passedWords.push(data.word);
         }
-        console.log(words);
     });
 
     socket.on('endTurn', (endReason, lastword) => {
         if (lastword) {
-            passedWords.push(lastword);
+            games[socket.gameID].passedWords.push(lastword);
         }
-        for (word of passedWords) {
-            words.push(word);
+        for (word of games[socket.gameID].passedWords) {
+            games[socket.gameID].words.push(word);
         }
-        passedWords = [];
-        io.emit('endTurn', endReason);
+        games[socket.gameID].passedWords = [];
+        io.in(socket.gameID).emit('endTurn', endReason);
     });
 
     socket.on('reFill', () => {
-        if (words.length > 0) {
+        if (games[socket.gameID].words.length > 0) {
             socket.emit('reFillRefused', 'Il y a des mots à piocher avant de remplir le chapeau')
         }
         else {
-            words = pickedWords;
-            pickedWords = [];
+            games[socket.gameID].words = games[socket.gameID].pickedWords;
+            games[socket.gameID].pickedWords = [];
         }
     })
 
     socket.on('endGame', () => {
-        words = [];
-        pickedWords = [];
-        io.emit('nbWords', words.length);
+        games[socket.gameID].words = [];
+        games[socket.gameID].pickedWords = [];
+        io.in(socket.gameID).emit('nbWords', games[socket.gameID].words.length);
     })
 
     socket.on('disconnect', (reason) => {
