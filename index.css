@@ -1,0 +1,185 @@
+body {
+    font-family: 'Poppins', serif;
+    letter-spacing: 1px;
+}
+
+h1 {
+    font-size: 56px;
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+}
+
+input {
+    text-align: center;
+    padding: 5px;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-family: 'Poppins', serif;
+    border: none;
+    font-size: 12px;
+    width: 250px;
+}
+
+::placeholder {
+    /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: white;
+    opacity: 0.5;
+}
+
+:-ms-input-placeholder {
+    /* Internet Explorer 10-11 */
+    color: white;
+}
+
+::-ms-input-placeholder {
+    /* Microsoft Edge */
+    color: white;
+}
+
+button {
+    text-align: center;
+    padding: 5px 8px;
+    border-radius: 8px;
+    color: white;
+    font-family: 'Poppins', serif;
+    border: none;
+    letter-spacing: 1px;
+    cursor: pointer;
+    box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.25);
+    color: #F96646;
+}
+
+.crea-game-btt {
+    padding: 10px 20px;
+    border-radius: 15px;
+    box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.25);
+    border: none;
+    font-size: 30px;
+    color: #F96646;
+    width: 100px;
+    cursor: pointer;
+}
+
+.guess-btt-container {
+    margin: 10px;
+    font-size: 100px;
+    display: flex;
+    justify-content: center;
+}
+
+.guess-btt {
+    margin: 10px;
+    font-size: 30px;
+    font-weight: 800;
+    width: 50px;
+}
+
+.arrow-right {
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 15px solid white;
+}
+
+
+.red-orange {
+    background: linear-gradient(0deg, #f06424 0%, rgba(255, 33, 14, 1.00) 100%);
+}
+
+.green-yellow {
+    background: linear-gradient(273deg, #ecf000 0%, hsl(117, 100%, 53%) 100%);
+}
+
+.center-container {
+    margin-left: auto;
+    margin-right: auto;
+    width: 400px;
+    font-family: 'Poppins', serif;
+}
+
+.game-box {
+    display: none;
+    border-radius: 26px;
+    box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.25);
+    color: white;
+    padding: 20px;
+}
+
+.logo {
+    /* width: 60px; */
+    display: flex;
+    align-items: flex-end;
+}
+
+.logo-shape-1 {
+    width: 60px;
+    height: 23px;
+    background-color: #ff2c16;
+    border-radius: 26px;
+}
+
+.logo-shape-2 {
+    width: 34px;
+    height: 39px;
+    background-color: #ff2c16;
+    border-radius: 26px;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    top: -16px;
+    /* left: 13px; */
+}
+
+.logo-shape-2-reverse {
+    width: 34px;
+    height: 39px;
+    background-color: #ff2c16;
+    border-radius: 26px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    justify-content: center;
+    align-content: space-around;
+    /* vertical-align: bottom; */
+    /* position: relative;
+    top: -16px;
+    left: 13px; */
+}
+
+.white02 {
+    background-color: #F96646;
+}
+
+.chapo {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.spacer10 {
+    height: 10px;
+    width: 10px;
+}
+
+.crea-game-form {
+    display: flex;
+    justify-content: center;
+}
+
+.input-words {
+    display: flex;
+    justify-content: center;
+}
+
+.span-nb-word {
+    padding: 5px;
+}
+
+.b-buttons {
+    padding-top: 20px;
+    display: flex;
+    justify-content: center;
+}

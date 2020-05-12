@@ -5,47 +5,67 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-  <title>Chapeau</title>
+  <title>Chapo</title>
   <script src="/socket.io/socket.io.js"></script>
+  <link rel="stylesheet" href="index.css">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:Extra-bold" rel="stylesheet" />
 </head>
 
 <body>
-  <h1>Le jeu du chapeau</h1>
-  <form action="" method="get" id="creaGameBtt">
-    <input type="hidden" name="gameID" id="gameID" value="1" />
-    <input type="submit" value="GO" onclick="creaGame()">
-  </form>
-  <div id="game" style="display:none">
-    <input type="text" placeholder="Ecrire un mot" id="word" />
-    <button onclick="addWord()">Mettre dans le chapeau</button>
-    <br /><br />
-    Le chapeau contient <span id="spanNbWords"></span> mots.<br /><br />
-    <button onclick="beginTurn()">Jouer un tour</button>
-    <strong id="pioche"></strong>
-    <spam id="timer"></spam>
-    <br /><br />
-    <button onclick="reFill()">Remettre les mots dans le chapeau</button>
-    <br /><br />
-    <button onclick="endGame()">Fin de partie</button>
-    <div id="turnView" style="
-          display: none;
-          position: absolute;
-          background-color: white;
-          border: 1px solid grey;
-          padding: 5px;
-          top: 5px;
-          left: 5px;
-          height: 500px;
-        ">
+  <h1>Chapo
+    <div class="spacer10"></div>
+    <div class="logo">
+      <div class="logo-shape-1">
+        <div class="logo-shape-2"></div>
+      </div>
+
+    </div>
+  </h1>
+  <div class="center-container">
+    <div class="game-box red-orange" id="crea-game-box">
+      <div style="font-size: 40px; text-align: center;">Créer une salle</div>
+      <div style="font-size: 20px; text-align: center;">Et invites tes potes</div>
+      <div class="spacer10"></div>
+      <form action="" method="get" id="creaGameForm" class="crea-game-form">
+        <input type="hidden" name="gameID" id="gameID" value="1" />
+        <input type="submit" value="GO" onclick="creaGame()" class="crea-game-btt green-yellow">
+      </form>
+    </div>
+    <div class="game-box red-orange" id="in-game-box">
+      <div class="input-words">
+        <input type="text" placeholder="Mettre un mot dans le chapo" id="word" />
+        <div class="spacer10"></div>
+        <button onclick="addWord()" class="green-yellow">
+          <div class="arrow-right"></div>
+        </button>
+      </div>
+      <div class="chapo">
+        <div class="logo">
+          <div class="logo-shape-1 white02">
+            <div class="logo-shape-2-reverse white02">
+              <span class="span-nb-word" id="spanNbWords"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="b-buttons">
+        <button onclick="beginTurn()" class="green-yellow" id="beginTurnBtt">Jouer</button>
+        <button onclick="reFill()" class="green-yellow" id="reFillBtt">Remettre les mots dans le chapeau</button>
+      </div>
+    </div>
+    <div id="turnView" class="game-box red-orange">
       <div id="big-words" style="font-size: 4vw; text-align: center;"></div>
-      <div id="guessBtt" style="display: none; justify-content: center;">
-        <button onclick="endWord('ok')" id="doneBtt">Réussi !</button>
-        <button onclick="endWord(null)" id="passBtt">Passe !</button>
+
+      <div id="big-big-words" style="font-size: 6vw; text-align: center;"></div>
+
+      <div id="guessBtt" class="guess-btt-container">
+        <button onclick="endWord('ok')" id="doneBtt" class="green-yellow guess-btt">&#10004;</button>
+        <button onclick="endWord(null)" id="passBtt" class="red-orange guess-btt">&#x2718;</button>
       </div>
       <div id="little-words" style="font-size: 2vw; text-align: center;"></div>
-      <div id="big-big-words" style="font-size: 6vw; text-align: center;"></div>
     </div>
   </div>
+
 </body>
 <script>
   var points = 0;
@@ -64,12 +84,14 @@
       socket.emit('newPlayer', gameID);
     } else {
       document.getElementById('gameID').value = socket.id;
+      document.getElementById('crea-game-box').style.display = 'block';
+      console.log("yo");
     }
   });
 
   socket.on('welcomeInGame', () => {
-    document.getElementById('game').style.display = '';
-    document.getElementById('creaGameBtt').style.display = 'none';
+    document.getElementById('in-game-box').style.display = 'block';
+    document.getElementById('crea-game-box').style.display = 'none';
   });
 
   socket.on('unavailableGame', () => {
@@ -80,8 +102,17 @@
     socket.emit('creaGame');
   }
 
-  socket.on('nbWords', (nbWords) => {
+  socket.on('nbWords', (nbWords, nbPickedWords) => {
     document.getElementById('spanNbWords').innerHTML = nbWords;
+    console.log(nbPickedWords);
+    if (nbWords === 0 && nbPickedWords !== 0) {
+      document.getElementById("reFillBtt").style.display = "block";
+      document.getElementById("beginTurnBtt").style.display = "none";
+    } else {
+      document.getElementById("reFillBtt").style.display = "none";
+      document.getElementById("beginTurnBtt").style.display = "block";
+
+    }
   });
 
   function beginTurn() {
@@ -94,7 +125,8 @@
     turnSatus = 'on';
     nbs = nbsDefault;
     timeTick();
-    document.getElementById('turnView').style.display = '';
+    document.getElementById('turnView').style.display = 'block';
+    document.getElementById('in-game-box').style.display = 'none';
   });
 
   function addWord() {
@@ -129,7 +161,7 @@
   socket.on('guessWord', (word) => {
     points += 1;
     var guessWords = document.getElementById('little-words');
-    guessWords.innerHTML += "<div style='color:green'>" + word + '</div>';
+    guessWords.innerHTML += '<br/>' + word + ' &#x2713;';
   });
 
   function timeTick() {
@@ -162,6 +194,7 @@
         document.getElementById('big-big-words').innerHTML = '';
         document.getElementById('little-words').innerHTML = '';
         document.getElementById('turnView').style.display = 'none';
+        document.getElementById('in-game-box').style.display = 'block';
       }),
       5000
     );

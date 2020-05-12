@@ -86,10 +86,12 @@ io.on('connection', function (socket) {
         if (games[gameID]) {
             games[gameID].players.push(socket.id);
             // console.log(socket.id + " rentre dans la game " + gameID + " : " + games[gameID].players);
-            socket.emit('welcomeInGame');
-            socket.emit('nbWords', games[gameID].words.length);
-            socket.join(gameID);
             socket.gameID = gameID;
+            socket.emit('welcomeInGame');
+            socket.emit('nbWords',
+                games[gameID].words.length,
+                games[gameID].pickedWords.length);
+            socket.join(gameID);
         }
         else {
             socket.emit('unavailableGame');
@@ -97,8 +99,9 @@ io.on('connection', function (socket) {
     });
 
     socket.on('majNbWords', () => {
-        // io.emit('nbWords', games[gameID].words.length);
-        io.in(socket.gameID).emit('nbWords', games[socket.gameID].words.length);
+        io.in(socket.gameID).emit('nbWords',
+            games[socket.gameID].words.length,
+            games[socket.gameID].pickedWords.length);
     });
 
     socket.on('addWord', (word) => {
