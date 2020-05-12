@@ -65,7 +65,7 @@ button {
 .guess-btt-container {
     margin: 10px;
     font-size: 100px;
-    display: flex;
+    display: none;
     justify-content: center;
 }
 
