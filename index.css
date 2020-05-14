@@ -11,34 +11,37 @@ h1 {
 }
 
 input {
+    z-index: 1;
     text-align: center;
     padding: 5px;
     border-radius: 8px;
     background-color: rgba(255, 255, 255, 0.2);
     color: white;
     font-family: 'Poppins', serif;
+    letter-spacing: 1px;
     border: none;
-    font-size: 12px;
-    width: 250px;
+    font-size: 1.8vw;
+    width: 95%;
 }
 
 ::placeholder {
     /* Chrome, Firefox, Opera, Safari 10.1+ */
-    color: white;
-    opacity: 0.5;
+    color: red;
+    opacity: 0.4;
 }
 
 :-ms-input-placeholder {
     /* Internet Explorer 10-11 */
-    color: white;
+    color: red;
 }
 
 ::-ms-input-placeholder {
     /* Microsoft Edge */
-    color: white;
+    color: red;
 }
 
 button {
+    z-index: 2;
     text-align: center;
     padding: 5px 8px;
     border-radius: 8px;
@@ -84,6 +87,14 @@ button {
     border-left: 15px solid white;
 }
 
+.arrow-down {
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 15px solid white;
+}
+
 
 .red-orange {
     background: linear-gradient(0deg, #f06424 0%, rgba(255, 33, 14, 1.00) 100%);
@@ -96,7 +107,7 @@ button {
 .center-container {
     margin-left: auto;
     margin-right: auto;
-    width: 400px;
+    width: 50vw;
     font-family: 'Poppins', serif;
 }
 
@@ -109,54 +120,57 @@ button {
 }
 
 .logo {
-    /* width: 60px; */
+    width: 60px;
+    height: 40px;
     display: flex;
     align-items: flex-end;
 }
 
+.chapo {
+    margin: auto;
+    padding-bottom: 20px;
+    position: relative;
+    width: 24vw;
+    height: 16vw;
+    top: -6vw;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
 .logo-shape-1 {
-    width: 60px;
-    height: 23px;
+    width: 100%;
+    height: 50%;
     background-color: #ff2c16;
-    border-radius: 26px;
+    border-radius: 50%;
 }
 
 .logo-shape-2 {
-    width: 34px;
-    height: 39px;
+    width: 59%;
+    height: 180%;
     background-color: #ff2c16;
-    border-radius: 26px;
+    border-radius: 50%;
     margin-left: auto;
     margin-right: auto;
     position: relative;
-    top: -16px;
-    /* left: 13px; */
+    top: -80%;
 }
 
 .logo-shape-2-reverse {
-    width: 34px;
-    height: 39px;
+    width: 59%;
+    height: 180%;
     background-color: #ff2c16;
-    border-radius: 26px;
+    border-radius: 50%;
     margin-left: auto;
     margin-right: auto;
     display: flex;
     justify-content: center;
     align-content: space-around;
-    /* vertical-align: bottom; */
-    /* position: relative;
-    top: -16px;
-    left: 13px; */
 }
+
 
 .white02 {
     background-color: #F96646;
-}
-
-.chapo {
-    padding: 20px;
-    display: flex;
-    justify-content: center;
 }
 
 .spacer10 {
@@ -171,15 +185,29 @@ button {
 
 .input-words {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
 }
 
 .span-nb-word {
-    padding: 5px;
+    opacity: 0.3;
+    color: red;
+    font-size: 6vw;
+    padding: 3vw;
 }
 
 .b-buttons {
-    padding-top: 20px;
+    /* padding-top: 20px; */
     display: flex;
     justify-content: center;
+}
+
+@media screen and (max-width: 640px) {
+    h1 {
+        font-size: 10vw;
+    }
+
+    .center-container {
+        width: 80vw;
+    }
 }
