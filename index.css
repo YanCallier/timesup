@@ -54,6 +54,16 @@ button {
     color: #F96646;
 }
 
+.welcome-title {
+    font-size: 6vw;
+    text-align: center;
+}
+
+.welcome-subtitle {
+    font-size: 4vw;
+    text-align: center;
+}
+
 .crea-game-btt {
     padding: 10px 20px;
     border-radius: 15px;
@@ -208,6 +218,16 @@ button {
     }
 
     .center-container {
-        width: 80vw;
+        width: 90vw;
+    }
+
+    .welcome-title {
+        font-size: 8vw;
+        text-align: center;
+    }
+
+    .welcome-subtitle {
+        font-size: 5vw;
+        text-align: center;
     }
 }
