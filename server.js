@@ -4,6 +4,7 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const MongoClient = require('mongodb').MongoClient;
+const translate = require('google-translate-api');
 
 // const uri = 'mongodb://localhost:27017/';
 // const uri = "mongodb+srv://yanAdmin:DATE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
@@ -70,6 +71,15 @@ var words = [];
 var pickedWords = [];
 var passedWords = [];
 const games = {};
+
+translate("vache", { from: 'fr', to: 'en' }).then(res => {
+    console.log(res.text);
+    //=> I speak English
+    console.log(res.from.language.iso);
+    //=> nl
+}).catch(err => {
+    console.error(err);
+});
 
 io.on('connection', function (socket) {
 
@@ -148,6 +158,17 @@ io.on('connection', function (socket) {
             games[socket.gameID].pickedWords = [];
         }
     })
+
+    socket.on('genWords', (word) => {
+        translate(word, { from: 'fr', to: 'en' }).then(res => {
+            console.log(res.text);
+            //=> I speak English
+            console.log(res.from.language.iso);
+            //=> nl
+        }).catch(err => {
+            console.error(err);
+        });
+    });
 
     socket.on('endGame', () => {
         games[socket.gameID].words = [];
