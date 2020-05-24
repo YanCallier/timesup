@@ -19,7 +19,6 @@ const io = require('socket.io')(server);
 //     console.error(err);
 // });
 const words = require('an-array-of-french-words')
-console.log(words[5]);
 
 
 // const uri = 'mongodb://localhost:27017/';
