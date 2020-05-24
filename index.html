@@ -1,260 +1,315 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0" /> -->
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1"
-    />
 
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Chapo</title>
-    <script src="/socket.io/socket.io.js"></script>
-    <link rel="stylesheet" href="index.css" />
-    <link
-      href="https://fonts.googleapis.com/css?family=Poppins:Extra-bold"
-      rel="stylesheet"
-    />
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0" /> -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
 
-  <body>
-    <h1>
-      Chapo
-      <div class="spacer10"></div>
-      <div class="logo">
-        <div class="logo-shape-1">
-          <div class="logo-shape-2"></div>
-        </div>
-      </div>
-    </h1>
-    <div class="center-container">
-      <div class="game-box red-orange" id="crea-game-box">
-        <div class="welcome-title">Créer une salle</div>
-        <div class="welcome-subtitle">
-          Et invites tes potes
-        </div>
-        <div class="spacer10"></div>
-        <form action="" method="get" id="creaGameForm" class="crea-game-form">
-          <input type="hidden" name="gameID" id="gameID" value="1" />
-          <input
-            type="submit"
-            value="GO"
-            onclick="creaGame()"
-            class="crea-game-btt green-yellow"
-          />
-        </form>
-      </div>
-      <div class="game-box red-orange" id="in-game-box">
-        <div class="input-words">
-          <input
-            type="text"
-            placeholder="Mettre un mot dans le chapo"
-            id="word"
-          />
-          <div class="spacer10"></div>
-          <button onclick="addWord()" class="green-yellow">
-            <div class="arrow-down"></div>
-          </button>
-        </div>
-        <div class="chapo">
-          <div class="logo-shape-1 white02">
-            <div class="logo-shape-2-reverse white02 resize80">
-              <span class="span-nb-word" id="spanNbWords"></span>
-            </div>
-          </div>
-        </div>
-        <div class="b-buttons">
-          <button onclick="beginTurn()" class="green-yellow" id="beginTurnBtt">
-            Jouer
-          </button>
-          <button onclick="reFill()" class="green-yellow" id="reFillBtt">
-            Remettre les mots dans le chapeau
-          </button>
-        </div>
-      </div>
-      <div id="turnView" class="game-box red-orange">
-        <div id="big-words" style="font-size: 4vw; text-align: center;"></div>
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Chapo</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="word-list.js"></script>
+  <link rel="stylesheet" href="index.css" />
+  <link href="https://fonts.googleapis.com/css?family=Poppins:Extra-bold" rel="stylesheet" />
+</head>
 
-        <div
-          id="big-big-words"
-          style="font-size: 6vw; text-align: center;"
-        ></div>
-
-        <div id="guessBtt" class="guess-btt-container">
-          <button
-            onclick="endWord('ok')"
-            id="doneBtt"
-            class="green-yellow guess-btt"
-          >
-            &#10004;
-          </button>
-          <button
-            onclick="endWord(null)"
-            id="passBtt"
-            class="red-orange guess-btt"
-          >
-            &#x2718;
-          </button>
-        </div>
-        <div
-          id="little-words"
-          style="font-size: 2vw; text-align: center;"
-        ></div>
+<body>
+  <h1>
+    Chapo
+    <div class="spacer10"></div>
+    <div class="logo">
+      <div class="logo-shape-1">
+        <div class="logo-shape-2"></div>
       </div>
     </div>
-  </body>
-  <script>
-    var points = 0;
-    var nbsDefault = 40;
-    var nbs;
-    var currentWord;
-    var turnSatus = null;
-    var urlParams = new URLSearchParams(window.location.search);
-    var gameID = urlParams.get('gameID');
+  </h1>
+  <div class="center-container">
+    <div class="game-box red-orange" id="crea-game-box">
+      <div class="welcome-title">Créer une salle</div>
+      <div class="welcome-subtitle">
+        Et invites tes potes en leur envoyant l'url
+      </div>
+      <div class="spacer10"></div>
+      <form action="" method="get" id="creaGameForm" class="crea-game-form">
+        <input type="hidden" name="gameID" id="gameID" value="1" />
+        <input type="submit" value="GO" onclick="creaGame()" class="crea-game-btt green-yellow" />
+      </form>
+    </div>
+    <div class="game-box red-orange" id="init-game-box">
+      <div class="call-to-action">
+        <div id="wordsToThrow">Elimines <span style="color:black" id="nbWordsToThrow"></span> mots :
+        </div>
+        <button onclick="inTheChapo()" class="green-yellow" id="inTheChapoBtt">
+          Mettre dans le chapo !
+        </button>
+      </div>
+      <div id="wordsToChoose" class="words-to-choose">
+      </div>
+      <div class="input-words">
+        <button onclick="newWord(document.getElementById('word').value)" class="green-yellow">
+          <div class="arrow-up"></div>
+        </button>
+        <div class="spacer10"></div>
+        <input type="text" placeholder="Ajouter un mot" id="word" />
+      </div>
+    </div>
+    <div class="game-box red-orange" id="in-game-box">
+      <div class="chapo">
+        <div class="logo-shape-1 white02">
+          <div class="logo-shape-2-reverse white02 resize80">
+            <span class="span-nb-word" id="spanNbWords"></span>
+          </div>
+        </div>
+      </div>
+      <div class="b-buttons">
+        <button onclick="beginTurn()" class="green-yellow" id="beginTurnBtt">
+          Jouer
+        </button>
+        <button onclick="reFill()" class="green-yellow" id="reFillBtt">
+          Remettre les mots dans le chapeau
+        </button>
+      </div>
+    </div>
+    <div id="turnView" class="game-box red-orange">
+      <div id="big-words" style="font-size: 4vw; text-align: center;"></div>
 
-    socket = io.connect();
-    // socket = io.connect('http://localhost:8080');
-    socket.on('connect', function () {
-      if (gameID) {
-        socket.emit('newPlayer', gameID);
+      <div id="big-big-words" style="font-size: 6vw; text-align: center;"></div>
+
+      <div id="guessBtt" class="guess-btt-container">
+        <button onclick="endWord('ok')" id="doneBtt" class="green-yellow guess-btt">
+          &#10004;
+        </button>
+        <button onclick="endWord(null)" id="passBtt" class="red-orange guess-btt">
+          &#x2718;
+        </button>
+      </div>
+      <div id="little-words" style="font-size: 2vw; text-align: center;"></div>
+    </div>
+  </div>
+</body>
+<script>
+  var points = 0;
+  var nbsDefault = 40;
+  var nbs;
+  var currentWord;
+  var turnSatus = null;
+  var urlParams = new URLSearchParams(window.location.search);
+  var gameID = urlParams.get('gameID');
+
+  socket = io.connect();
+  // socket = io.connect('http://localhost:8080');
+  socket.emit('genWords', 'vache');
+  socket.on('connect', function () {
+    if (gameID) {
+      socket.emit('newPlayer', gameID);
+    } else {
+      document.getElementById('gameID').value = socket.id;
+      document.getElementById('crea-game-box').style.display = 'block';
+      // socket.emit('disconnect', 'no room');
+      // socket.close()
+    }
+  });
+
+  socket.on('welcomeInGame', () => {
+    genWords(0);
+    document.getElementById('init-game-box').style.display = 'block';
+    document.getElementById('crea-game-box').style.display = 'none';
+  });
+
+  socket.on('unavailableGame', () => {
+    alert('Cette url est fausse ou périmée.');
+  });
+
+  function creaGame() {
+    socket.emit('creaGame');
+  }
+
+  ///////////////////////////////////////////////// init game vue
+  var choosenWords = [];
+  var wordsByPersonn = 10;
+
+  function randomWord() {
+    var randomWordId = Math.floor(Math.random() * Math.floor(words.length));
+    return (words[randomWordId]);
+  }
+
+  function genWords() {
+    newWord(randomWord());
+    if (choosenWords.length < 12) {
+      genWords();
+    }
+  }
+
+  function newWord(word) {
+    document.getElementById('word').value = '';
+    document.getElementById('wordsToChoose').appendChild(newWordCard(word));
+    chooseWord(word);
+    // socket.emit('addWord', word);
+    // socket.emit('majNbWords');
+  }
+
+  function newWordCard(word) {
+    var wordCard = document.createElement("div");
+    wordCard.innerHTML = word.toUpperCase();
+    wordCard.innerHTML += "<span class='card-overlay'>&#10008</span>";
+    wordCard.onclick = function () {
+      chooseWord(word);
+      this.style.display = "none";
+    };
+
+    return wordCard;
+  }
+
+  function chooseWord(word) {
+    var wordIndex = choosenWords.indexOf(word);
+    if (wordIndex === -1) {
+      choosenWords.push(word);
+    } else {
+      choosenWords.splice(wordIndex, 1);
+    }
+    var wordsToThrow = choosenWords.length - wordsByPersonn;
+    var overLays = document.getElementsByClassName('card-overlay');
+    if (wordsToThrow > 0) {
+      document.getElementById('nbWordsToThrow').innerHTML = wordsToThrow;
+      document.getElementById('wordsToThrow').style.display = 'block';
+      document.getElementsByClassName('card-overlay').style = '';
+      document.getElementById('inTheChapoBtt').style.display = 'none';
+      for (overLay of overLays) {
+        overLay.style.display = 'block';
+      };
+    } else {
+      document.getElementById('wordsToThrow').style.display = 'none';
+      document.getElementById('inTheChapoBtt').style.display = 'block';
+      for (overLay of overLays) {
+        overLay.style.display = 'none';
+      };
+    }
+  }
+
+  function throwWord(word) {
+    chooseWord(word, "remove");
+  }
+
+  function inTheChapo() {
+    socket.emit('inTheChapo', choosenWords);
+    document.getElementById('init-game-box').style.display = 'none';
+    document.getElementById('in-game-box').style.display = 'block';
+    socket.emit('majNbWords');
+  }
+
+  ///////////////////////////////////////////////// in game vue
+
+  socket.on('nbWords', (nbWords, nbPickedWords) => {
+    document.getElementById('spanNbWords').innerHTML = nbWords;
+    if (nbWords === 0 && nbPickedWords !== 0) {
+      document.getElementById('reFillBtt').style.display = 'block';
+      document.getElementById('beginTurnBtt').style.display = 'none';
+    } else {
+      document.getElementById('reFillBtt').style.display = 'none';
+      document.getElementById('beginTurnBtt').style.display = 'block';
+    }
+  });
+
+  function beginTurn() {
+    socket.emit('beginTurn');
+    document.getElementById('guessBtt').style.display = 'flex';
+    draw();
+  }
+
+  socket.on('beginTurn', () => {
+    turnSatus = 'on';
+    nbs = nbsDefault;
+    timeTick();
+    document.getElementById('turnView').style.display = 'block';
+    document.getElementById('in-game-box').style.display = 'none';
+  });
+
+  function draw() {
+    console.log('drawing');
+    socket.emit('draw');
+  }
+
+  socket.on('draw', (pickedWord) => {
+    currentWord = pickedWord;
+    if (pickedWord) {
+      document.getElementById('big-words').innerHTML = pickedWord;
+    } else {
+      endTurn('Le chapeau est vide !');
+    }
+  });
+
+  function endWord(guess) {
+    socket.emit('endWord', {
+      guess: guess,
+      word: currentWord,
+    });
+    draw();
+  }
+
+  socket.on('guessWord', (word) => {
+    points += 1;
+    var guessWords = document.getElementById('little-words');
+    guessWords.innerHTML += '<br/>' + word + ' &#x2713;';
+  });
+
+  function timeTick() {
+    if (turnSatus) {
+      nbs -= 1;
+      document.getElementById('big-big-words').innerHTML = nbs + ' s';
+      if (nbs < 0) {
+        endTurn('Temps écoulé !', currentWord);
       } else {
-        document.getElementById('gameID').value = socket.id;
-        document.getElementById('crea-game-box').style.display = 'block';
-        console.log('yo');
-      }
-    });
-
-    socket.on('welcomeInGame', () => {
-      document.getElementById('in-game-box').style.display = 'block';
-      document.getElementById('crea-game-box').style.display = 'none';
-    });
-
-    socket.on('unavailableGame', () => {
-      alert('Cette url est fausse ou périmée.');
-    });
-
-    function creaGame() {
-      socket.emit('creaGame');
-    }
-
-    socket.on('nbWords', (nbWords, nbPickedWords) => {
-      document.getElementById('spanNbWords').innerHTML = nbWords;
-      console.log(nbPickedWords);
-      if (nbWords === 0 && nbPickedWords !== 0) {
-        document.getElementById('reFillBtt').style.display = 'block';
-        document.getElementById('beginTurnBtt').style.display = 'none';
-      } else {
-        document.getElementById('reFillBtt').style.display = 'none';
-        document.getElementById('beginTurnBtt').style.display = 'block';
-      }
-    });
-
-    function beginTurn() {
-      socket.emit('beginTurn');
-      document.getElementById('guessBtt').style.display = 'flex';
-      draw();
-    }
-
-    socket.on('beginTurn', () => {
-      turnSatus = 'on';
-      nbs = nbsDefault;
-      timeTick();
-      document.getElementById('turnView').style.display = 'block';
-      document.getElementById('in-game-box').style.display = 'none';
-    });
-
-    function addWord() {
-      var word = document.getElementById('word').value;
-      document.getElementById('word').value = '';
-      socket.emit('addWord', word);
-      socket.emit('majNbWords');
-    }
-
-    function draw() {
-      console.log('drawing');
-      socket.emit('draw');
-    }
-
-    socket.on('draw', (pickedWord) => {
-      currentWord = pickedWord;
-      if (pickedWord) {
-        document.getElementById('big-words').innerHTML = pickedWord;
-      } else {
-        endTurn('Le chapeau est vide !');
-      }
-    });
-
-    function endWord(guess) {
-      socket.emit('endWord', {
-        guess: guess,
-        word: currentWord,
-      });
-      draw();
-    }
-
-    socket.on('guessWord', (word) => {
-      points += 1;
-      var guessWords = document.getElementById('little-words');
-      guessWords.innerHTML += '<br/>' + word + ' &#x2713;';
-    });
-
-    function timeTick() {
-      if (turnSatus) {
-        nbs -= 1;
-        document.getElementById('big-big-words').innerHTML = nbs + ' s';
-        if (nbs < 0) {
-          endTurn('Temps écoulé !', currentWord);
-        } else {
-          setTimeout(timeTick, 1000);
-        }
+        setTimeout(timeTick, 1000);
       }
     }
+  }
 
-    function endTurn(endReason, lastWord) {
-      socket.emit('endTurn', endReason, lastWord);
-    }
+  function endTurn(endReason, lastWord) {
+    socket.emit('endTurn', endReason, lastWord);
+  }
 
-    socket.on('endTurn', (endReason) => {
-      turnSatus = null;
-      document.getElementById('guessBtt').style.display = 'none';
-      document.getElementById('big-words').innerHTML = endReason;
-      document.getElementById('big-big-words').innerHTML = points + ' points';
-      points = 0;
-      nbs = nbsDefault;
-      socket.emit('majNbWords');
-      setTimeout(
-        (hideTurnView = function () {
-          document.getElementById('big-words').innerHTML = '';
-          document.getElementById('big-big-words').innerHTML = '';
-          document.getElementById('little-words').innerHTML = '';
-          document.getElementById('turnView').style.display = 'none';
-          document.getElementById('in-game-box').style.display = 'block';
-        }),
-        5000
-      );
-    });
+  socket.on('endTurn', (endReason) => {
+    turnSatus = null;
+    document.getElementById('guessBtt').style.display = 'none';
+    document.getElementById('big-words').innerHTML = endReason;
+    document.getElementById('big-big-words').innerHTML = points + ' points';
+    points = 0;
+    nbs = nbsDefault;
+    socket.emit('majNbWords');
+    setTimeout(
+      (hideTurnView = function () {
+        document.getElementById('big-words').innerHTML = '';
+        document.getElementById('big-big-words').innerHTML = '';
+        document.getElementById('little-words').innerHTML = '';
+        document.getElementById('turnView').style.display = 'none';
+        document.getElementById('in-game-box').style.display = 'block';
+      }),
+      5000
+    );
+  });
 
-    // function displayReFillBtt(pickedWords){
-    //     if (nbWords === 0 && pickedWords > 0){
-    //         document.getElementById('reFillBtt').style.display = '';
-    //     }
-    //     else {
-    //         document.getElementById('reFillBtt').style.display = "none";
-    //     }
-    // }
+  // function displayReFillBtt(pickedWords){
+  //     if (nbWords === 0 && pickedWords > 0){
+  //         document.getElementById('reFillBtt').style.display = '';
+  //     }
+  //     else {
+  //         document.getElementById('reFillBtt').style.display = "none";
+  //     }
+  // }
 
-    function reFill() {
-      socket.emit('reFill');
-      socket.emit('majNbWords');
-    }
+  function reFill() {
+    socket.emit('reFill');
+    socket.emit('majNbWords');
+  }
 
-    socket.on('reFillRefused', (refuseReason) => {
-      alert(refuseReason);
-    });
+  socket.on('reFillRefused', (refuseReason) => {
+    alert(refuseReason);
+  });
 
-    function endGame() {
-      socket.emit('endGame');
-    }
-  </script>
+  function endGame() {
+    socket.emit('endGame');
+  }
+</script>
+
 </html>

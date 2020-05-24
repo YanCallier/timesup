@@ -3,8 +3,24 @@ const express = require('express');
 const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
-const MongoClient = require('mongodb').MongoClient;
-const translate = require('google-translate-api');
+// const MongoClient = require('mongodb').MongoClient;
+// const translate = require('@k3rn31p4nic/google-translate-api');
+// const tunnel = require('tunnel');
+// var agent = tunnel.httpsOverHttp({
+//     proxy: {
+//         host: 'localhost',
+//         port: 8123
+//     }
+// });
+
+// translate('Tu es incroyable!', { to: 'en' }).then(res => {
+//     console.log(res.text); // OUTPUT: You are amazing!
+// }).catch(err => {
+//     console.error(err);
+// });
+const words = require('an-array-of-french-words')
+console.log(words[5]);
+
 
 // const uri = 'mongodb://localhost:27017/';
 // const uri = "mongodb+srv://yanAdmin:DATE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
@@ -67,19 +83,12 @@ app.use("/", express.static(__dirname));
 //     });
 // });
 
-var words = [];
-var pickedWords = [];
-var passedWords = [];
+// var words = [];
+// var pickedWords = [];
+// var passedWords = [];
 const games = {};
 
-translate("vache", { from: 'fr', to: 'en' }).then(res => {
-    console.log(res.text);
-    //=> I speak English
-    console.log(res.from.language.iso);
-    //=> nl
-}).catch(err => {
-    console.error(err);
-});
+
 
 io.on('connection', function (socket) {
 
@@ -114,8 +123,8 @@ io.on('connection', function (socket) {
             games[socket.gameID].pickedWords.length);
     });
 
-    socket.on('addWord', (word) => {
-        games[socket.gameID].words.push(word);
+    socket.on('inTheChapo', (choosenWords) => {
+        games[socket.gameID].words.push(...choosenWords);
     });
 
     socket.on('beginTurn', () => {
@@ -159,16 +168,16 @@ io.on('connection', function (socket) {
         }
     })
 
-    socket.on('genWords', (word) => {
-        translate(word, { from: 'fr', to: 'en' }).then(res => {
-            console.log(res.text);
-            //=> I speak English
-            console.log(res.from.language.iso);
-            //=> nl
-        }).catch(err => {
-            console.error(err);
-        });
-    });
+    // socket.on('genWords', (word) => {
+    //     translate(word, { from: 'fr', to: 'en' }).then(res => {
+    //         console.log(res.text);
+    //         //=> I speak English
+    //         console.log(res.from.language.iso);
+    //         //=> nl
+    //     }).catch(err => {
+    //         console.error(err);
+    //     });
+    // });
 
     socket.on('endGame', () => {
         games[socket.gameID].words = [];

@@ -20,24 +20,23 @@ input {
     font-family: 'Poppins', serif;
     letter-spacing: 1px;
     border: none;
-    font-size: 1.8vw;
+    /* font-size: 1.8vw; */
+    font-size: 10px;
     width: 95%;
+    text-transform: uppercase;
 }
 
 ::placeholder {
-    /* Chrome, Firefox, Opera, Safari 10.1+ */
-    color: red;
-    opacity: 0.4;
+    color: white;
+    /* opacity: 0.4; */
 }
 
 :-ms-input-placeholder {
-    /* Internet Explorer 10-11 */
-    color: red;
+    color: white;
 }
 
 ::-ms-input-placeholder {
-    /* Microsoft Edge */
-    color: red;
+    color: white;
 }
 
 button {
@@ -97,6 +96,14 @@ button {
     border-left: 15px solid white;
 }
 
+.arrow-up {
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 15px solid white;
+}
+
 .arrow-down {
     width: 0;
     height: 0;
@@ -119,6 +126,52 @@ button {
     margin-right: auto;
     width: 50vw;
     font-family: 'Poppins', serif;
+}
+
+.call-to-action {
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+#inTheChapoBtt {
+    width: 60%;
+    min-width: 100px;
+
+}
+
+.words-to-choose {
+    display: flex;
+    flex-wrap: wrap;
+    padding-bottom: 10px;
+}
+
+.words-to-choose div {
+    height: 60px;
+    min-width: 100px;
+    box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.25);
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    margin: 1%;
+    width: 30%;
+    font-size: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.words-to-choose div:hover .card-overlay {
+    opacity: 1;
+}
+
+.card-overlay {
+    font-size: 50px;
+    font-size-adjust: none;
+    color: black;
+    text-transform: uppercase;
+    position: absolute;
+    opacity: 0;
 }
 
 .game-box {
