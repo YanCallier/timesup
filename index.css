@@ -287,4 +287,8 @@ button {
     .words-to-choose div {
         flex-grow: 1;
     }
+
+    .card-overlay {
+        display: none !important;
+    }
 }
