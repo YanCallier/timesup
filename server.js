@@ -97,7 +97,12 @@ io.on('connection', function (socket) {
             pickedWords: [],
             passedWords: [],
             players: [],
+            status: null,
         };
+    });
+
+    socket.on('gameStatus', (status) => {
+        games[socket.gameID].status = status;
     });
 
     socket.on('newPlayer', (gameID) => {
@@ -105,7 +110,7 @@ io.on('connection', function (socket) {
             games[gameID].players.push(socket.id);
             // console.log(socket.id + " rentre dans la game " + gameID + " : " + games[gameID].players);
             socket.gameID = gameID;
-            socket.emit('welcomeInGame');
+            socket.emit('welcomeInGame', games[gameID].status);
             socket.emit('nbWords',
                 games[gameID].words.length,
                 games[gameID].pickedWords.length);

@@ -111,10 +111,14 @@
     }
   });
 
-  socket.on('welcomeInGame', () => {
-    genWords(0);
-    document.getElementById('init-game-box').style.display = 'block';
+  socket.on('welcomeInGame', (gameStatus) => {
     document.getElementById('crea-game-box').style.display = 'none';
+    if (gameStatus) {
+      document.getElementById('in-game-box').style.display = 'block';
+    } else {
+      genWords(0);
+      document.getElementById('init-game-box').style.display = 'block';
+    }
   });
 
   socket.on('unavailableGame', () => {
@@ -221,6 +225,7 @@
     turnSatus = 'on';
     nbs = nbsDefault;
     timeTick();
+    socket.emit('gameStatus', "inGame")
     document.getElementById('turnView').style.display = 'block';
     document.getElementById('in-game-box').style.display = 'none';
   });
